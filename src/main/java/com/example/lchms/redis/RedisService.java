@@ -13,12 +13,16 @@ public class RedisService {
     JedisPool jedisPool; //通过注入JedisPool来获取redis对象
 
 
-
-    public <T> T get(String key,Class<T> clazz){
+    /**
+     *获取当个对象
+     * */
+    public <T> T get(KeyPrefix prefix,String key,Class<T> clazz){
         Jedis jedis = null;
         try {
             jedis=jedisPool.getResource();
-            String str = jedis.get(key);
+            //生成一个真正的key
+            String realKey = prefix.getPrefix() + key;
+            String str = jedis.get(realKey);
             T t = StringToBean(str,clazz);
             return t;
         }
@@ -26,7 +30,10 @@ public class RedisService {
             returnToPool(jedis);
         }
     }
-    public <T> boolean set(String key,T value){
+    /**
+     *设置对象
+     * */
+    public <T> boolean set(KeyPrefix prefix,String key,T value){
         Jedis jedis = null;
         try {
             jedis=jedisPool.getResource();
@@ -34,8 +41,64 @@ public class RedisService {
             if (str==null|| str.length()<=0){
                 return false;
             }
-            jedis.set(key,str);
+            //生成一个真正的key
+            String realKey = prefix.getPrefix() + key;
+            //过期时间
+           int seconds =prefix.expireSeconds();
+           if (seconds<=0){                  //永不过期
+               jedis.set(realKey,str);
+           }
+           else{
+               jedis.setex(key,seconds,str);
+            }
             return true;
+        }
+        finally {
+            returnToPool(jedis);
+        }
+    }
+
+    /**
+     *判断key是否存在
+     * */
+    public <T> boolean exists(KeyPrefix prefix,String key){
+        Jedis jedis = null;
+        try {
+            jedis=jedisPool.getResource();
+            //生成一个真正的key
+            String realKey = prefix.getPrefix() + key;
+           return  jedis.exists(realKey);
+        }
+        finally {
+            returnToPool(jedis);
+        }
+    }
+
+    /**
+     *增加值
+     * */
+    public <T> Long incr(KeyPrefix prefix,String key){
+        Jedis jedis = null;
+        try {
+            jedis=jedisPool.getResource();
+            //生成一个真正的key
+            String realKey = prefix.getPrefix() + key;
+            return  jedis.incr(realKey);
+        }
+        finally {
+            returnToPool(jedis);
+        }
+    }
+    /**
+     *减少值
+     * */
+    public <T> Long decr(KeyPrefix prefix,String key){
+        Jedis jedis = null;
+        try {
+            jedis=jedisPool.getResource();
+            //生成一个真正的key
+            String realKey = prefix.getPrefix() + key;
+            return  jedis.decr(realKey);
         }
         finally {
             returnToPool(jedis);

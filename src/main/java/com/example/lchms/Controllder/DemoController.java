@@ -4,6 +4,7 @@ import com.example.lchms.Result.CodeMsg;
 import com.example.lchms.Result.Result;
 import com.example.lchms.domain.User;
 import com.example.lchms.redis.RedisService;
+import com.example.lchms.redis.UserKey;
 import com.example.lchms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -50,15 +51,17 @@ public class DemoController {
     @RequestMapping("/redis/get")
     @ResponseBody
     public Result<Long> redisGet() {
-        Long v1 = redisService.get("key1",Long.class);
+        Long v1 = redisService.get(UserKey.getById,""+1,Long.class);
         return Result.success(v1);
     }
 
     @RequestMapping("/redis/set")
     @ResponseBody
-    public Result<String> redisSet() {
-        boolean ret = redisService.set(prefix,"key2","kuangfeng");
-        String v2 = redisService.get(prefix,"key2", String.class);
-        return Result.success(v2);
+    public Result<Boolean> redisSet() {
+        User  user =new User();
+        user.setName("kkk");
+        user.setId(112);
+        redisService.set(UserKey.getById,""+1,user);
+        return  Result.success(true);
     }
 }

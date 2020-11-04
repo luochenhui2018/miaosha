@@ -78,6 +78,11 @@
             <version>6.11</version>
             <scope>compile</scope>
         </dependency>
+<!--        SpringBoot校验(validation),自定义参数校验器-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

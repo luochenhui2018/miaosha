@@ -1,6 +1,8 @@
 package Vo;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.lang.NonNull;
 
 /**
  * @author kuangfeng
@@ -8,7 +10,10 @@ import lombok.Data;
  */
 @Data
 public class LoginVo {
+    @NonNull
     private String mobile;
+    @NonNull
+    @Length(min = 32)
     private String password;
 
     @Override

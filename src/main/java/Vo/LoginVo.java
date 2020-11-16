@@ -1,8 +1,10 @@
 package Vo;
 
+import com.example.lchms.validator.IsMobile;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.lang.NonNull;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author kuangfeng
@@ -10,10 +12,11 @@ import org.springframework.lang.NonNull;
  */
 @Data
 public class LoginVo {
-    @NonNull
+    @NotNull
+    @IsMobile
     private String mobile;
-    @NonNull
-    @Length(min = 32)
+    @NotNull
+    @Length(min = 6)
     private String password;
 
     @Override
